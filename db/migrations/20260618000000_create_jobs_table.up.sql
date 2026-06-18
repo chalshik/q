@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS jobs (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    prompt TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'queued',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
