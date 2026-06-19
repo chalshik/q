@@ -49,7 +49,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/jobs", handler.CreateJob)
 
-	log.Println("HTTP Server listening on :8080...")
 	go func() {
 		log.Println("HTTP Server listening on :8080...")
 		if err := http.ListenAndServe(":8080", mux); err != nil {
@@ -64,6 +63,7 @@ func main() {
 	dispatcherServer := internalgrpc.NewDispatcherServer(jobService, db, jobQueue)
 
 	proto.RegisterDispatcherServer(grpcServer, dispatcherServer)
+	log.Println("gRPC Server listening on :50051...")
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("gRPC Server crashed: %v", err)
 	}
