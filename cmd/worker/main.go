@@ -1,32 +1,35 @@
 package main
 
-import "time"
+import (
+	"context"
+	"dispatcher/proto"
+	"fmt"
 
-type Worker struct {
-	status string
-}
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
 
-func (w *Worker) sendHeartbeat(heartbeatCh chan bool) {
-	go func() {
-		for i := 0; i < 3; i++ {
-			time.Sleep(time.Second)
-			heartbeatCh <- true
-		}
-		// stops here — monitor should detect death
-	}()
-}
 func main() {
-	worker := &Worker{}
-	heartbeatCh := make(chan bool)
-	worker.sendHeartbeat(heartbeatCh)
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	for {
-		select {
-		case <-time.After(5 * time.Second):
-			println("No heartbeat received from worker for 5 seconds")
-		case <-heartbeatCh:
-			println("Heartbeat received from worker")
-		}
+	if err != nil {
+		panic(err)
 	}
+	client := proto.NewDispatcherClient(conn)
 
+	jobResponse, err := client.GetJob(context.Background(), &proto.GetJobRequest{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Received Job: %+v\n", jobResponse)
+
+	// Example: Submit a result
+	submitResponse, err := client.SubmitResult(context.Background(), &proto.SubmitResultRequest{
+		JobId:  jobResponse.Id,
+		Status: "completed",
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Submit Result Response: %+v\n", submitResponse)
 }
