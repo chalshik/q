@@ -35,7 +35,10 @@ func main() {
 	scheduler := scheduler.NewScheduler(jobService, jobQueue)
 
 	// Start the scheduler in a separate goroutine
-	go scheduler.Start(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go scheduler.Start(ctx)
 	// 5. Setup Router and Start Server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/jobs", handler.CreateJob)
