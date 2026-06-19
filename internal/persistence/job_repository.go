@@ -2,20 +2,10 @@ package persistence
 
 import (
 	"context"
-	"time"
+	"dispatcher/internal/models"
 
 	"github.com/jmoiron/sqlx"
 )
-
-// Job matches your database schema exactly
-type Job struct {
-	ID        string    `db:"id"`
-	UserID    string    `db:"user_id"`
-	Prompt    string    `db:"prompt"`
-	Status    string    `db:"status"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-}
 
 type JobRepository struct {
 	db *sqlx.DB
@@ -26,7 +16,7 @@ func NewJobRepository(db *sqlx.DB) *JobRepository {
 }
 
 // Insert adds a new job record to PostgreSQL
-func (r *JobRepository) Insert(ctx context.Context, job *Job) error {
+func (r *JobRepository) Insert(ctx context.Context, job *models.Job) error {
 	query := `
 		INSERT INTO jobs (id, user_id, prompt, status, created_at, updated_at)
 		VALUES (:id, :user_id, :prompt, :status, :created_at, :updated_at)
@@ -36,8 +26,8 @@ func (r *JobRepository) Insert(ctx context.Context, job *Job) error {
 }
 
 // GetByID fetches a single job by its ID.
-func (r *JobRepository) GetByID(ctx context.Context, id string) (*Job, error) {
-	var job Job
+func (r *JobRepository) GetByID(ctx context.Context, id string) (*models.Job, error) {
+	var job models.Job
 	query := `SELECT id, user_id, prompt, status, created_at, updated_at FROM jobs WHERE id = $1`
 	if err := r.db.GetContext(ctx, &job, query, id); err != nil {
 		return nil, err
@@ -46,8 +36,8 @@ func (r *JobRepository) GetByID(ctx context.Context, id string) (*Job, error) {
 }
 
 // ListByUserID fetches all jobs belonging to a given user, most recent first.
-func (r *JobRepository) ListByUserID(ctx context.Context, userID string) ([]Job, error) {
-	var jobs []Job
+func (r *JobRepository) ListByUserID(ctx context.Context, userID string) ([]models.Job, error) {
+	var jobs []models.Job
 	query := `SELECT id, user_id, prompt, status, created_at, updated_at FROM jobs WHERE user_id = $1 ORDER BY created_at DESC`
 	if err := r.db.SelectContext(ctx, &jobs, query, userID); err != nil {
 		return nil, err

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"dispatcher/internal/models"
 	"dispatcher/internal/persistence"
 	"dispatcher/internal/queue"
 
@@ -23,8 +24,8 @@ func NewJobService(repo *persistence.JobRepository, q *queue.Queue) *JobService 
 	}
 }
 
-func (s *JobService) Create(ctx context.Context, userID string, prompt string) (*persistence.Job, error) {
-	job := &persistence.Job{
+func (s *JobService) Create(ctx context.Context, userID string, prompt string) (*models.Job, error) {
+	job := &models.Job{
 		ID:        uuid.New().String(),
 		UserID:    userID,
 		Prompt:    prompt,
@@ -44,4 +45,14 @@ func (s *JobService) Create(ctx context.Context, userID string, prompt string) (
 	}
 
 	return job, nil
+}
+func (s *JobService) GetByID(ctx context.Context, id string) (*models.Job, error) {
+	job, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("service failed to retrieve job: %w", err)
+	}
+	return job, nil
+}
+func (s *JobService) UpdateStatus(ctx context.Context, id string, status string) error {
+	return s.repo.UpdateStatus(ctx, id, status)
 }
