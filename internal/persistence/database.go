@@ -91,31 +91,3 @@ func getEnv(key, fallback string) string {
 	}
 	return fallback
 }
-
-// Job matches your database schema exactly
-type Job struct {
-	ID        string    `db:"id"`
-	UserID    string    `db:"user_id"`
-	Prompt    string    `db:"prompt"`
-	Status    string    `db:"status"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
-}
-
-type JobRepository struct {
-	db *sqlx.DB
-}
-
-func NewJobRepository(db *sqlx.DB) *JobRepository {
-	return &JobRepository{db: db}
-}
-
-// Insert adds a new job record to PostgreSQL
-func (r *JobRepository) Insert(ctx context.Context, job *Job) error {
-	query := `
-		INSERT INTO jobs (id, user_id, prompt, status, created_at, updated_at)
-		VALUES (:id, :user_id, :prompt, :status, :created_at, :updated_at)
-	`
-	_, err := r.db.NamedExecContext(ctx, query, job)
-	return err
-}
