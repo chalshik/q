@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package dispatcher;
+
+option go_package = "dispatcher/proto";
+
+message GetJobRequest {
+  string worker_id = 1;
+}
+
+message GetJobResponse {
+  string id = 1;
+  string prompt = 2;
+  string status = 3;
+}
+
+message SubmitResultRequest {
+  string job_id = 1;
+  string worker_id = 2;
+  string status = 3;
+}
+
+message SubmitResultResponse {
+  bool success = 1;
+}
+
+service Dispatcher {
+  rpc GetJob(GetJobRequest) returns (GetJobResponse);
+  rpc SubmitResult(SubmitResultRequest) returns (SubmitResultResponse);
+}
