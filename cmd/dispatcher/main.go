@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	transportHTTP "dispatcher/internal/http"
 	"dispatcher/internal/persistence"
 	"dispatcher/internal/queue"
+	"dispatcher/internal/scheduler"
 	service "dispatcher/internal/services"
 )
 
@@ -30,7 +32,10 @@ func main() {
 
 	// 4. Initialize Transport Layer (HTTP)
 	handler := transportHTTP.NewHandler(jobService)
+	scheduler := scheduler.NewScheduler(jobService, jobQueue)
 
+	// Start the scheduler in a separate goroutine
+	go scheduler.Start(context.Background())
 	// 5. Setup Router and Start Server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/jobs", handler.CreateJob)
