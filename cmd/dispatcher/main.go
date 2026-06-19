@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 
 	transportHTTP "dispatcher/internal/http"
@@ -10,6 +11,11 @@ import (
 	"dispatcher/internal/queue"
 	"dispatcher/internal/scheduler"
 	service "dispatcher/internal/services"
+
+	internalgrpc "dispatcher/internal/grpc"
+	proto "dispatcher/proto"
+
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -44,7 +50,21 @@ func main() {
 	mux.HandleFunc("/jobs", handler.CreateJob)
 
 	log.Println("HTTP Server listening on :8080...")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
-		log.Fatalf("HTTP Server crashed: %v", err)
+	go func() {
+		log.Println("HTTP Server listening on :8080...")
+		if err := http.ListenAndServe(":8080", mux); err != nil {
+			log.Fatalf("HTTP Server crashed: %v", err)
+		}
+	}()
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen on :50051: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	dispatcherServer := internalgrpc.NewDispatcherServer(jobService, db, jobQueue)
+
+	proto.RegisterDispatcherServer(grpcServer, dispatcherServer)
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("gRPC Server crashed: %v", err)
 	}
 }

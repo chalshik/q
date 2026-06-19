@@ -16,6 +16,7 @@ type DispatcherServer struct {
 	jobService *service.JobService
 	db         *sqlx.DB
 	queue      *queue.Queue
+	proto.UnimplementedDispatcherServer
 }
 
 func NewDispatcherServer(jobService *service.JobService, db *sqlx.DB, queue *queue.Queue) *DispatcherServer {
