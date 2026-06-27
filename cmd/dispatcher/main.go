@@ -6,13 +6,13 @@ import (
 	"net"
 	"net/http"
 
-	transportHTTP "dispatcher/internal/http"
+	transportHTTP "dispatcher/internal/networking/http"
 	"dispatcher/internal/persistence"
 	"dispatcher/internal/queue"
 	"dispatcher/internal/scheduler"
 	service "dispatcher/internal/services"
 
-	internalgrpc "dispatcher/internal/grpc"
+	internalgrpc "dispatcher/internal/networking/grpc"
 	proto "dispatcher/proto"
 
 	"google.golang.org/grpc"
