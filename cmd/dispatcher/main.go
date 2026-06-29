@@ -31,7 +31,10 @@ func main() {
 
 	// 2. Initialize Infrastructure Layers
 	jobRepo := persistence.NewJobRepository(db)
-	jobQueue := queue.NewQueue(1000) // Set a baseline capacity for your memory channel
+	jobQueue, err := queue.NewJobQueue("localhost:6379")
+	if err != nil {
+		log.Fatalf("Redis initialization failed: %v", err)
+	}
 
 	// 3. Initialize Core Business Logic (Service Layer)
 	jobService := service.NewJobService(jobRepo, jobQueue)
