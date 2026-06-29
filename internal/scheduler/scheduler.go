@@ -4,18 +4,21 @@ import (
 	"context"
 	"dispatcher/internal/queue"
 	service "dispatcher/internal/services"
+	"dispatcher/internal/worker"
 	"log"
 )
 
 type Scheduler struct {
-	jobService *service.JobService
-	queue      queue.Queue
+	jobService     *service.JobService
+	queue          queue.Queue
+	workerRegistry *worker.WorkerRegistry
 }
 
-func NewScheduler(jobService *service.JobService, queue queue.Queue) *Scheduler {
+func NewScheduler(jobService *service.JobService, queue queue.Queue, workerRegistry *worker.WorkerRegistry) *Scheduler {
 	return &Scheduler{
-		jobService: jobService,
-		queue:      queue,
+		jobService:     jobService,
+		queue:          queue,
+		workerRegistry: workerRegistry,
 	}
 }
 

@@ -11,6 +11,7 @@ import (
 	"dispatcher/internal/queue"
 	"dispatcher/internal/scheduler"
 	service "dispatcher/internal/services"
+	"dispatcher/internal/worker"
 
 	internalgrpc "dispatcher/internal/networking/grpc"
 	proto "dispatcher/proto"
@@ -35,13 +36,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Redis initialization failed: %v", err)
 	}
+	workerRegistry, err := worker.NewWorkerRegistry("localhost:6379")
+	if err != nil {
+		log.Fatalf("Redis initialization failed: %v", err)
+	}
 
 	// 3. Initialize Core Business Logic (Service Layer)
 	jobService := service.NewJobService(jobRepo, jobQueue)
 
 	// 4. Initialize Transport Layer (HTTP)
 	handler := transportHTTP.NewHandler(jobService)
-	scheduler := scheduler.NewScheduler(jobService, jobQueue)
+	scheduler := scheduler.NewScheduler(jobService, jobQueue, workerRegistry)
 
 	// Start the scheduler in a separate goroutine
 	ctx, cancel := context.WithCancel(context.Background())
