@@ -68,9 +68,9 @@ func main() {
 		log.Fatalf("Failed to listen on :50051: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	dispatcherServer := internalgrpc.NewDispatcherServer(jobService, db, jobQueue)
+	dispatcherServer := internalgrpc.NewDispatcherServer(workerRegistry)
 
-	proto.RegisterDispatcherServer(grpcServer, dispatcherServer)
+	proto.RegisterDispatcherServiceServer(grpcServer, dispatcherServer)
 	log.Println("gRPC Server listening on :50051...")
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("gRPC Server crashed: %v", err)
