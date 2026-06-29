@@ -14,122 +14,208 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// DispatcherClient is the client API for Dispatcher service.
+// DispatcherServiceClient is the client API for DispatcherService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type DispatcherClient interface {
-	GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*GetJobResponse, error)
-	SubmitResult(ctx context.Context, in *SubmitResultRequest, opts ...grpc.CallOption) (*SubmitResultResponse, error)
+type DispatcherServiceClient interface {
+	RegisterAvailable(ctx context.Context, in *RegisterAvailableRequest, opts ...grpc.CallOption) (*RegisterAvailableResponse, error)
 }
 
-type dispatcherClient struct {
+type dispatcherServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewDispatcherClient(cc grpc.ClientConnInterface) DispatcherClient {
-	return &dispatcherClient{cc}
+func NewDispatcherServiceClient(cc grpc.ClientConnInterface) DispatcherServiceClient {
+	return &dispatcherServiceClient{cc}
 }
 
-func (c *dispatcherClient) GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*GetJobResponse, error) {
-	out := new(GetJobResponse)
-	err := c.cc.Invoke(ctx, "/dispatcher.Dispatcher/GetJob", in, out, opts...)
+func (c *dispatcherServiceClient) RegisterAvailable(ctx context.Context, in *RegisterAvailableRequest, opts ...grpc.CallOption) (*RegisterAvailableResponse, error) {
+	out := new(RegisterAvailableResponse)
+	err := c.cc.Invoke(ctx, "/dispatcher.DispatcherService/RegisterAvailable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dispatcherClient) SubmitResult(ctx context.Context, in *SubmitResultRequest, opts ...grpc.CallOption) (*SubmitResultResponse, error) {
-	out := new(SubmitResultResponse)
-	err := c.cc.Invoke(ctx, "/dispatcher.Dispatcher/SubmitResult", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// DispatcherServer is the server API for Dispatcher service.
-// All implementations must embed UnimplementedDispatcherServer
+// DispatcherServiceServer is the server API for DispatcherService service.
+// All implementations must embed UnimplementedDispatcherServiceServer
 // for forward compatibility
-type DispatcherServer interface {
-	GetJob(context.Context, *GetJobRequest) (*GetJobResponse, error)
-	SubmitResult(context.Context, *SubmitResultRequest) (*SubmitResultResponse, error)
-	mustEmbedUnimplementedDispatcherServer()
+type DispatcherServiceServer interface {
+	RegisterAvailable(context.Context, *RegisterAvailableRequest) (*RegisterAvailableResponse, error)
+	mustEmbedUnimplementedDispatcherServiceServer()
 }
 
-// UnimplementedDispatcherServer must be embedded to have forward compatible implementations.
-type UnimplementedDispatcherServer struct {
+// UnimplementedDispatcherServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedDispatcherServiceServer struct {
 }
 
-func (UnimplementedDispatcherServer) GetJob(context.Context, *GetJobRequest) (*GetJobResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetJob not implemented")
+func (UnimplementedDispatcherServiceServer) RegisterAvailable(context.Context, *RegisterAvailableRequest) (*RegisterAvailableResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterAvailable not implemented")
 }
-func (UnimplementedDispatcherServer) SubmitResult(context.Context, *SubmitResultRequest) (*SubmitResultResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitResult not implemented")
-}
-func (UnimplementedDispatcherServer) mustEmbedUnimplementedDispatcherServer() {}
+func (UnimplementedDispatcherServiceServer) mustEmbedUnimplementedDispatcherServiceServer() {}
 
-// UnsafeDispatcherServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to DispatcherServer will
+// UnsafeDispatcherServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to DispatcherServiceServer will
 // result in compilation errors.
-type UnsafeDispatcherServer interface {
-	mustEmbedUnimplementedDispatcherServer()
+type UnsafeDispatcherServiceServer interface {
+	mustEmbedUnimplementedDispatcherServiceServer()
 }
 
-func RegisterDispatcherServer(s grpc.ServiceRegistrar, srv DispatcherServer) {
-	s.RegisterService(&Dispatcher_ServiceDesc, srv)
+func RegisterDispatcherServiceServer(s grpc.ServiceRegistrar, srv DispatcherServiceServer) {
+	s.RegisterService(&DispatcherService_ServiceDesc, srv)
 }
 
-func _Dispatcher_GetJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetJobRequest)
+func _DispatcherService_RegisterAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterAvailableRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DispatcherServer).GetJob(ctx, in)
+		return srv.(DispatcherServiceServer).RegisterAvailable(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dispatcher.Dispatcher/GetJob",
+		FullMethod: "/dispatcher.DispatcherService/RegisterAvailable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DispatcherServer).GetJob(ctx, req.(*GetJobRequest))
+		return srv.(DispatcherServiceServer).RegisterAvailable(ctx, req.(*RegisterAvailableRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Dispatcher_SubmitResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitResultRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DispatcherServer).SubmitResult(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/dispatcher.Dispatcher/SubmitResult",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DispatcherServer).SubmitResult(ctx, req.(*SubmitResultRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// Dispatcher_ServiceDesc is the grpc.ServiceDesc for Dispatcher service.
+// DispatcherService_ServiceDesc is the grpc.ServiceDesc for DispatcherService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Dispatcher_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "dispatcher.Dispatcher",
-	HandlerType: (*DispatcherServer)(nil),
+var DispatcherService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "dispatcher.DispatcherService",
+	HandlerType: (*DispatcherServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetJob",
-			Handler:    _Dispatcher_GetJob_Handler,
+			MethodName: "RegisterAvailable",
+			Handler:    _DispatcherService_RegisterAvailable_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/dispatcher.proto",
+}
+
+// WorkerServiceClient is the client API for WorkerService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type WorkerServiceClient interface {
+	PushJob(ctx context.Context, in *PushJobRequest, opts ...grpc.CallOption) (*PushJobResponse, error)
+	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+}
+
+type workerServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewWorkerServiceClient(cc grpc.ClientConnInterface) WorkerServiceClient {
+	return &workerServiceClient{cc}
+}
+
+func (c *workerServiceClient) PushJob(ctx context.Context, in *PushJobRequest, opts ...grpc.CallOption) (*PushJobResponse, error) {
+	out := new(PushJobResponse)
+	err := c.cc.Invoke(ctx, "/dispatcher.WorkerService/PushJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workerServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, "/dispatcher.WorkerService/HealthCheck", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// WorkerServiceServer is the server API for WorkerService service.
+// All implementations must embed UnimplementedWorkerServiceServer
+// for forward compatibility
+type WorkerServiceServer interface {
+	PushJob(context.Context, *PushJobRequest) (*PushJobResponse, error)
+	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
+	mustEmbedUnimplementedWorkerServiceServer()
+}
+
+// UnimplementedWorkerServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedWorkerServiceServer struct {
+}
+
+func (UnimplementedWorkerServiceServer) PushJob(context.Context, *PushJobRequest) (*PushJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PushJob not implemented")
+}
+func (UnimplementedWorkerServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
+func (UnimplementedWorkerServiceServer) mustEmbedUnimplementedWorkerServiceServer() {}
+
+// UnsafeWorkerServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WorkerServiceServer will
+// result in compilation errors.
+type UnsafeWorkerServiceServer interface {
+	mustEmbedUnimplementedWorkerServiceServer()
+}
+
+func RegisterWorkerServiceServer(s grpc.ServiceRegistrar, srv WorkerServiceServer) {
+	s.RegisterService(&WorkerService_ServiceDesc, srv)
+}
+
+func _WorkerService_PushJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PushJobRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkerServiceServer).PushJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dispatcher.WorkerService/PushJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkerServiceServer).PushJob(ctx, req.(*PushJobRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkerService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkerServiceServer).HealthCheck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dispatcher.WorkerService/HealthCheck",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkerServiceServer).HealthCheck(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// WorkerService_ServiceDesc is the grpc.ServiceDesc for WorkerService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var WorkerService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "dispatcher.WorkerService",
+	HandlerType: (*WorkerServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "PushJob",
+			Handler:    _WorkerService_PushJob_Handler,
 		},
 		{
-			MethodName: "SubmitResult",
-			Handler:    _Dispatcher_SubmitResult_Handler,
+			MethodName: "HealthCheck",
+			Handler:    _WorkerService_HealthCheck_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
