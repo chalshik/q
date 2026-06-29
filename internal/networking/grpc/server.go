@@ -15,11 +15,11 @@ import (
 type DispatcherServer struct {
 	jobService *service.JobService
 	db         *sqlx.DB
-	queue      *queue.Queue
+	queue      queue.Queue
 	proto.UnimplementedDispatcherServer
 }
 
-func NewDispatcherServer(jobService *service.JobService, db *sqlx.DB, queue *queue.Queue) *DispatcherServer {
+func NewDispatcherServer(jobService *service.JobService, db *sqlx.DB, queue queue.Queue) *DispatcherServer {
 	return &DispatcherServer{
 		jobService: jobService,
 		db:         db,
@@ -27,7 +27,7 @@ func NewDispatcherServer(jobService *service.JobService, db *sqlx.DB, queue *que
 	}
 }
 func (s *DispatcherServer) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.GetJobResponse, error) {
-	jobId := s.queue.Pop()
+	jobId := s.queue.Dequeue()
 	job, err := s.jobService.GetByID(ctx, jobId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve job: %w", err)

@@ -14,10 +14,10 @@ import (
 
 type JobService struct {
 	repo  *persistence.JobRepository
-	queue *queue.Queue
+	queue queue.Queue
 }
 
-func NewJobService(repo *persistence.JobRepository, q *queue.Queue) *JobService {
+func NewJobService(repo *persistence.JobRepository, q queue.Queue) *JobService {
 	return &JobService{
 		repo:  repo,
 		queue: q,
@@ -40,7 +40,7 @@ func (s *JobService) Create(ctx context.Context, userID string, prompt string) (
 	}
 
 	// 2. Push to the in-memory queue
-	if err := s.queue.Push(job.ID); err != nil {
+	if err := s.queue.Enqueue(job.ID); err != nil {
 		return nil, fmt.Errorf("service failed to enqueue job: %w", err)
 	}
 

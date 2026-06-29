@@ -9,10 +9,10 @@ import (
 
 type Scheduler struct {
 	jobService *service.JobService
-	queue      *queue.Queue
+	queue      queue.Queue
 }
 
-func NewScheduler(jobService *service.JobService, queue *queue.Queue) *Scheduler {
+func NewScheduler(jobService *service.JobService, queue queue.Queue) *Scheduler {
 	return &Scheduler{
 		jobService: jobService,
 		queue:      queue,
@@ -27,7 +27,7 @@ func (s *Scheduler) Start(ctx context.Context) {
 			log.Println("scheduler: received shutdown signal, exiting main loop")
 			return
 		default:
-			jobID := s.queue.Pop()
+			jobID := s.queue.Dequeue()
 			log.Printf("scheduler: popped job ID %s from queue", jobID)
 			log.Printf("scheduler: processing job ID %s", jobID)
 		}
